@@ -1,6 +1,53 @@
 (() => {
   "use strict";
 
+  // Settings management
+  let isEnabled = true;
+
+  // Load settings from storage
+  async function loadSettings() {
+    try {
+      const settings = await chrome.storage.sync.get({ enabled: true });
+      isEnabled = settings.enabled;
+
+      // On initial load, just render if enabled. Don't reload if disabled.
+      if (isEnabled) {
+        renderInElement(document.body);
+      }
+    } catch (e) {
+      console.warn('Failed to load settings, using defaults');
+    }
+  }
+
+  // Listen for settings changes
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'updateSettings') {
+      isEnabled = message.settings.enabled;
+
+      if (!isEnabled) {
+        clearRenderedMath();
+      } else {
+        renderInElement(document.body);
+      }
+
+      sendResponse({ success: true });
+    }
+  });
+
+  // Function to clear rendered math
+  function clearRenderedMath() {
+    const rendered = document.querySelectorAll('.katex, .katex-display');
+    rendered.forEach(el => {
+      // Replace with original text if possible
+      const parent = el.parentElement;
+      if (parent) {
+        parent.removeAttribute('data-katex-hash');
+      }
+    });
+    // Reload the page to show original text
+    location.reload();
+  }
+
   function ensureKaTeXStylesheet() {
     const id = "katex-ext-stylesheet";
     if (document.getElementById(id)) return;
@@ -141,6 +188,7 @@
   }
 
   function renderInElement(el) {
+    if (!isEnabled) return;
     if (!el || el.nodeType !== Node.ELEMENT_NODE) return;
     if (isInsideSkippable(el)) return;
 
@@ -177,10 +225,12 @@
   }
 
   // Initial pass.
-  renderInElement(document.body);
+  loadSettings();
 
   // Observe DOM additions + text edits (characterData) common in chat embeds.
   const obs = new MutationObserver((mutations) => {
+    if (!isEnabled) return;
+
     for (const m of mutations) {
       if (m.type === "characterData") {
         const p = m.target && m.target.parentElement;
