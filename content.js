@@ -180,7 +180,8 @@
           s.includes(">") ||
           s.includes("<") ||
           /[0-9]/.test(s) ||
-          /^[A-Za-z]+\([^)]+\)$/.test(s); // e.g., Q(t)
+          /^[A-Za-z]+\([^)]+\)$/.test(s) || // e.g., Q(t)
+          /^[A-Za-z]$/.test(s); // Single letter variables like k, t, Q
 
         if (!looksMathy) return match;
         if (s.length > 80) return match; // guard: avoid converting long prose
