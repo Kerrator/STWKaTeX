@@ -41,16 +41,22 @@
 
   // Function to clear rendered math
   function clearRenderedMath() {
-    const rendered = document.querySelectorAll('.katex, .katex-display');
-    rendered.forEach(el => {
-      // Replace with original text if possible
-      const parent = el.parentElement;
-      if (parent) {
-        parent.removeAttribute('data-katex-hash');
+    // Find all elements that have been rendered
+    const elements = document.querySelectorAll('[data-katex-hash]');
+
+    elements.forEach(el => {
+      // Restore original HTML if we have it
+      const original = el.getAttribute("data-katex-original");
+      if (original) {
+        el.innerHTML = original;
       }
+
+      // Clean up our data attributes
+      el.removeAttribute('data-katex-hash');
+      el.removeAttribute('data-katex-original');
     });
-    // Reload the page to show original text
-    location.reload();
+
+    // No more page reload needed!
   }
 
   function ensureKaTeXStylesheet() {
@@ -206,6 +212,11 @@
     if (lastHash === currentHash) return;
 
     try {
+      // Store original HTML before normalizing/rendering (for toggle without reload)
+      if (!el.getAttribute("data-katex-original")) {
+        el.setAttribute("data-katex-original", el.innerHTML);
+      }
+
       // Normalize [ ... ] style math into \[ ... \] first.
       normalizeSquareBracketDisplayMath(el);
       normalizeSpacedParenInlineMath(el);
