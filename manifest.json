@@ -22,10 +22,10 @@
     "open_in_tab": false
   },
   "permissions": ["storage"],
-  "host_permissions": ["*://*quan*/*"],
+  "host_permissions": ["*://*/*"],
   "content_scripts": [
     {
-      "matches": ["*://*quan*/*"],
+      "matches": ["*://*/*"],
       "js": [
         "vendor/katex.min.js",
         "vendor/auto-render.min.js",
