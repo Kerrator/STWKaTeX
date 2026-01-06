@@ -1,6 +1,11 @@
 (() => {
   "use strict";
 
+  // Only run on sites with "quan" in the domain
+  if (!window.location.hostname.includes("quan")) {
+    return;
+  }
+
   // Settings management
   let isEnabled = true;
 
