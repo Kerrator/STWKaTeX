@@ -173,7 +173,7 @@
       if (!t || !t.includes("(") || !t.includes(")")) continue;
 
       // Skip if text already contains proper LaTeX delimiters
-      if (t.includes("\\(") || t.includes("\\)")) continue;
+      if (t.includes("\\(") || t.includes("\\)") || t.includes("\\[") || t.includes("\\]")) continue;
 
       // Convert: ( Q_0 ) -> \( Q_0 \)
       // Only if it looks mathy (underscore, caret, backslash, =, >, <, digits, function notation)
