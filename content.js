@@ -132,6 +132,9 @@
       let t = tn.nodeValue;
       if (!t || !t.includes("[") || !t.includes("]")) continue;
 
+      // Skip if text already contains proper LaTeX delimiters
+      if (t.includes("\\[") || t.includes("\\]")) continue;
+
       // Convert: [ ... ] -> \[ ... \]
       // Only if it looks "mathy" (avoid normal bracketed prose / links)
       // Avoid Markdown links: [text](url)
@@ -168,6 +171,9 @@
 
       let t = tn.nodeValue;
       if (!t || !t.includes("(") || !t.includes(")")) continue;
+
+      // Skip if text already contains proper LaTeX delimiters
+      if (t.includes("\\(") || t.includes("\\)")) continue;
 
       // Convert: ( Q_0 ) -> \( Q_0 \)
       // Only if it looks mathy (underscore, caret, backslash, =, >, <, digits, function notation)
